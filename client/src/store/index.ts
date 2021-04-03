@@ -2,6 +2,8 @@ import { Campus, Course, Department, Professor, Room, Semester } from "@/types";
 import { createStore } from "vuex";
 import { State } from "@vue/runtime-core";
 
+const URL = "http://localhost:8000";
+
 export default createStore({
   state: {
     courses: [],
@@ -35,50 +37,34 @@ export default createStore({
     },
   },
   actions: {
-    loadSearchParams(context) {
-      const result = {
-        professors: [
-          {
-            id: 0,
-            name: "Prof. Martin",
-          },
-          {
-            id: 1,
-            name: "David Brown",
-          },
-        ],
-        semesters: [
-          {
-            id: 1,
-            name: "Fall 2020",
-          },
-        ],
-        rooms: [
-          {
-            id: 0,
-            name: "N10001",
-            campus: 0,
-          },
-          {
-            id: 1,
-            name: "N10002",
-            campus: 0,
-          },
-        ],
-        campus: [
-          {
-            id: 0,
-            name: "Waterloo",
-          },
-        ],
-        departments: [
-          {
-            id: 0,
-            name: "Computer Science",
-            code: "CP",
-          },
-        ],
+    async loadSearchParams(context) {
+      type searchParamsServerReturn = {
+        professors: {
+          id: number;
+          name: string;
+        }[];
+        campus: {
+          id: number;
+          name: string;
+        }[];
+        semesters: {
+          id: number;
+          name: string;
+        }[];
+        rooms: {
+          id: number;
+          name: string;
+          campus: number;
+        }[];
+        departments: {
+          id: number;
+          name: string;
+          code: string;
+        }[];
       };
+
+      const response = await fetch(URL + "/search-params");
+      const result = (await response.json()) as searchParamsServerReturn;
 
       result.professors.forEach((p) => {
         context.commit("addProfessor", p);
@@ -102,28 +88,27 @@ export default createStore({
         context.commit("addRoom", p);
       });
     },
-    refreshCourses(context, query: string) {
-      // TODO: query server
-      console.log(query);
+    async refreshCourses(context, query: string) {
+      context.commit("removeCourses");
+      type courseQueryResult = {
+        id: number;
+        code: string;
+        title: string;
+        description: string;
+        time_start: number;
+        time_end: number;
+        online: boolean;
+        in_person: boolean;
+        credits: number;
+        capacity: number;
+        space_left: number;
+        professor: number;
+        room: number;
+        semester: number;
+      }[];
 
-      const result = [
-        {
-          code: "CP102",
-          id: 0,
-          title: "Intro to Compsci",
-          description: "Welcome to compsci",
-          time_start: 17093949,
-          time_end: 182748394,
-          online: true,
-          in_person: false,
-          credits: 0.5,
-          capacity: 150,
-          space_left: 0,
-          professor: 0,
-          room: 0,
-          semester: 0,
-        },
-      ];
+      const response = await fetch(URL + "/query" + query);
+      const result = (await response.json()).courses as courseQueryResult;
 
       result.forEach((c) => {
         const course: Course = {

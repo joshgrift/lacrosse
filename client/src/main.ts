@@ -4,5 +4,7 @@ import store from "./store";
 
 createApp(App).use(store).mount("#app");
 
-store.dispatch("loadSearchParams");
-store.dispatch("refreshCourses");
+(async function () {
+  await store.dispatch("loadSearchParams");
+  await store.dispatch("refreshCourses", "?limit=100");
+})();
