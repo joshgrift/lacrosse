@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { ComponentCustomProperties } from "vue";
 import { Store } from "vuex";
-import { Course } from "@/types";
+import { Course, Department, Professor, Room, Semester } from "@/types";
 
 declare module "*.vue" {
   import type { DefineComponent } from "vue";
@@ -13,6 +13,11 @@ declare module "@vue/runtime-core" {
   // declare your own store states
   interface State {
     courses: Course[];
+    professors: Professor[];
+    campus: Campus[];
+    semesters: Semester[];
+    rooms: Room[];
+    departments: Department[];
   }
 
   // provide typings for `this.$store`

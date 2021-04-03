@@ -1,10 +1,13 @@
 <template>
   <div class="bg-gray-100 mt-5 p-3 px-4">
     <div class="grid grid-cols-2 grid-rows-2">
-      <div>{{ course.code }} - {{ course.name }} ({{ course.term }})</div>
+      <div>
+        {{ course.code }} - {{ course.title }} ({{ course.semester.name }})
+      </div>
       <div class="text-right text-sm text-gray-500">
         <span
           class="block float-right w-6 h-6 mx-1 bg-green-100 rounded-full p-1"
+          v-if="course.in_person"
           ><svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -20,6 +23,7 @@
         ></span>
         <span
           class="block float-right w-6 h-6 mx-1 bg-green-100 rounded-full p-1"
+          v-if="course.online"
           ><svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -34,21 +38,20 @@
             /></svg
         ></span>
       </div>
-      <div class="text-sm text-gray-500">8:00am - 8:30am | MWF | N10001</div>
-      <div class="text-sm text-gray-500 text-right">Prof. Martin</div>
+      <div class="text-sm text-gray-500">
+        8:00am - 8:30am | MWF | {{ course.room.name }}
+      </div>
+      <div class="text-sm text-gray-500 text-right">
+        {{ course.professor.name }}
+      </div>
     </div>
 
     <p class="mt-1 text-sm text-gray-700">
-      Selected topics may include graph colouring, extremal graph theory, planar
-      graphs, random graphs, network flows, algebraic methods in graph theory,
-      Ramsay theory for graphs, matching theory, graph algorithms; application
-      of graph theory, such as applications to scheduling, VLSI circuits,
-      compiler design, computer vision and the design of internet search
-      engines.
+      {{ course.description }}
     </p>
 
     <p class="text-right text-xs mt-1 text-gray-400">
-      <span class="text-yellow-500"> 5 seats remaining </span>| 0.5 credits
+      {{ course.capacity }} seats | {{ course.credits }} credits
     </p>
   </div>
 </template>
