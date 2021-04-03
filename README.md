@@ -9,7 +9,10 @@
 
 ### Client
 
-TODO
+- Install nodejs
+- `cd client`
+- `npm i`
+- `npm serve`
 
 ### Database
 
