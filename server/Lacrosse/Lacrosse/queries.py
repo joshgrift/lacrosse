@@ -1,17 +1,17 @@
 from django.http import JsonResponse
-import mysql.connector
+#import mysql.connector
 
 
 def query(request):
     print(request.GET["limit"])
-    mydb = mysql.connector.connect(
-        host = "db-mysql-tor1-86354-do-user-3862566-0.b.db.ondigitalocean.com:25060",
-        user = "cp465",
-        password = "fskjd3njkfds8jk3ASDFuq38",
-        database = "cp465"
-    )
-    cursor = mydb.cursor()
-    userQuery = "SELECT * FROM courses WHERE"
+    #mydb = mysql.connector.connect(
+    #    host = "db-mysql-tor1-86354-do-user-3862566-0.b.db.ondigitalocean.com:25060",
+    #    user = "cp465",
+    #    password = "fskjd3njkfds8jk3ASDFuq38",
+    #    database = "cp465"
+    #)
+    #cursor = mydb.cursor()
+    userQuery = "SELECT * FROM course WHERE"
     if "limit" in request.GET:
         userQuery += " limit = " + request.GET.get("limit", False)
     if "professor" in request.GET:
@@ -62,6 +62,55 @@ def query(request):
 
 
 def searchParams(request):
+    # rooms semesters + campus are not used
+    # need query for professors and department
+    #mydb = mysql.connector.connect(
+    #    host="db-mysql-tor1-86354-do-user-3862566-0.b.db.ondigitalocean.com:25060",
+    #    user="cp465",
+    #    password="fskjd3njkfds8jk3ASDFuq38",
+    #    database="cp465"
+    #)
+
+    # --------- PROFESSOR ---------
+    # cursor1 = mydb.cursor()
+
+    professorQuery = "SELECT * FROM professor"
+    # cursor1.execute(professorQuery)
+
+    # result1 = cursor1.fetchall()
+
+    # --------- DEPARTMENT ---------
+    # cursor2 = mydb.cursor()
+
+    departmentQuery = "SELECT * FROM department"
+    # cursor2.execute(departmentQuery)
+
+    # result2 = cursor2.fetchall()
+
+    # --------- SEMESTER ---------
+    # cursor3 = mydb.cursor()
+
+    # semesterQuery = "SELECT * FROM semester"
+    # cursor3.execute(semesterQuery)
+
+    # result3 = cursor3.fetchall()
+
+    # --------- ROOMS ---------
+    # cursor4 = mydb.cursor()
+
+    # semesterQuery = "SELECT * FROM semester"
+    # cursor4.execute(semesterQuery)
+
+    # result4 = cursor4.fetchall()
+
+    # --------- CAMPUS ---------
+    # cursor5 = mydb.cursor()
+
+    # semesterQuery = "SELECT * FROM semester"
+
+    # cursor5.execute(semesterQuery)
+    # result5 = cursor5.fetchall()
+
     params = {
         "professors": [
             {
