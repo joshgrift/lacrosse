@@ -22,4 +22,5 @@ urlpatterns = [
     path("query", queries.query),
     path("search-params", queries.searchParams),
     path("*", views.hello_world),
+    path('', views.hello_world)
 ]
