@@ -21,13 +21,27 @@ mydb = mysql.connector.connect(
   database='cp465',
   port="25060"
 )
-
+cursor = mydb.cursor(buffered=True)
 
 #term = sys.argv
 
 #temp input until I know what system arguments to look for
 term = input("enter term: ")
+id = 1
 
+if term=="202005":
+    term_name = "Spring 2020"
+elif term=="202009":
+    term_name = "Fall 2020"
+elif term=="202101":
+    term_name = "Winter 2021"
+else:
+    term_name = "Spring 2021"
+
+sql = "INSERT INTO semester (id, name) VALUE (%s, %s)"
+val = (id, term_name)
+cursor.execute(sql, val)    
+mydb.commit()
 
 for i in range(len(courseCodes)):
     for x in range(8):     
@@ -35,15 +49,13 @@ for i in range(len(courseCodes)):
         response = requests.get("https://scheduleme.wlu.ca/vsb/add_suggest.jsp?term=" + str(term) +"&cams=C_K_T_V_W_Z_CC_G_X_Y_MC&course_add=" +
                                 courseCodes[i] + "&page_num=" + str(x) + "&_=" + str(ts))
         soup = BeautifulSoup(response.content, 'html.parser')
-        #numCourses = soup.find('add_suggest', results="")
+       
 
         #term_one = soup.find(id="term_202005")
         #term_two = soup.find(id="term_202009")
         #term_three = soup.find(id="term_202101")
         #term_four = soup.find(id="term_202105")
 
-        #print(term_one, term_two, term_three, term_four)
-        # print(numCourses)
         for y in range(7):
             try:
                 temp = soup.find(id=y+1).get_text()
@@ -51,34 +63,35 @@ for i in range(len(courseCodes)):
                 courses.append(temp)
             except:
                 continue
-# print(soup.prettify())
 
 for course in courses:
     #                             https://scheduleme.wlu.ca/vsb/getclassdata.jsp?term=202009&course_1_0=BU-127&rq_1_0=null&t=802&e=24&nouser=1&_=1618248019531
-    depthResponse = requests.get("https://scheduleme.wlu.ca/vsb/getclassdata.jsp?term=202009&course_1_0=CP-102&rq_1_0=null&t=970&e=18&nouser=1&_=" + str(ts))
+    depthResponse = requests.get("https://scheduleme.wlu.ca/vsb/getclassdata.jsp?term=202009&course_1_0=CP-102&rq_1_0=null&t=92&e=15&nouser=1&_=" + str(ts))
     soup = BeautifulSoup(depthResponse.content, 'html.parser')
 
-    id = 1
+    
     title = soup.course.attrs['title']
     description = soup.course.attrs['desc']
     faculty = soup.course.attrs['faculty']
     prof = soup.block.attrs['teacher']
     credits = soup.block.attrs['credits']
     section = soup.block.attrs['disp']
-    online = 1 #everything online
+    online = True #everything online
+    in_person = False
     capacity = 150
 
-    queryprof = "SELECT * FROM professor WHERE name=%s"
-    args = prof
-    
-    """ query = "INSERT INTO cp465(id, title, description, faculty, prof, credits, section, online, capacity) " \
-        "VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-    args = (id, title, description, faculty, prof, credits, section, online, capacity)
-    
-    
+    sql = "INSERT INTO professor (id, name) VALUE (%s, %s)"
+    val = (id, prof)
 
-    id +=1
- """
+    cursor.execute(sql, val)
+
+    sql = "INSERT INTO course (id, title, department, professor, description, time_start, time_end, semester, online, in_person, room, credits, capactity, space_left)" \
+        "VALUE (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    val = (id, title, faculty, prof, description, None, None, term, online, in_person, None, credits, capacity, None)
+    cursor.execute(sql, val)
+
+    mydb.commit()
+    id += 1
 
 """ +--------------+--------------+------+-----+---------+----------------+
 | Field        | Type         | Null | Key | Default | Extra          |

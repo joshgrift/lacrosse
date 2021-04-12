@@ -18,7 +18,7 @@ mydb = mysql.connector.connect(
 ts = calendar.timegm(time.gmtime())
 #print(ts)
                              #https://scheduleme.wlu.ca/vsb/getclassdata.jsp?term=202009&course_1_0=CP-102&rq_1_0=null&t=922&e=64&nouser=1&_=1618254474
-depthResponse = requests.get("https://scheduleme.wlu.ca/vsb/getclassdata.jsp?term=202009&course_1_0=CP-102&rq_1_0=null&t=47&e=25&nouser=1&_=" + str(ts))
+depthResponse = requests.get("https://scheduleme.wlu.ca/vsb/getclassdata.jsp?term=202009&course_1_0=CP-102&rq_1_0=null&t=59&e=20&nouser=1&_=" + str(ts))
 
 
 soup = BeautifulSoup(depthResponse.content, 'html.parser')
@@ -37,13 +37,18 @@ cursor = mydb.cursor(buffered=True)
 cursor.execute(queryprof)
 results = cursor.fetchall()
 #print(results)
+id = 1
 if(len(results) == 0):
-    sql = "INSERT INTO professor (name) VALUE ('" + prof + "')"
-    val = ("Stevie")
+    sql = "INSERT INTO professor (id, name) VALUE (%s, %s)"
+    val = (id, prof)
     #print(queryprof)
-    cursor.execute(queryprof)
+    cursor.execute(sql, val)
     print(sql)
     
 mydb.commit()
+queryprof = "SELECT * FROM professor"
+cursor.execute(queryprof)
 results = cursor.fetchall()    
 print(results)
+
+print(faculty)
