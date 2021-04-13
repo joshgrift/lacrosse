@@ -5,7 +5,8 @@
 ### Server
 
 - Install Django (`pip3 install django`)
-- Run server (`python3 server/manage.py runserver`)
+- Install `mysql`, `mysql-connector-python` and `django-cors-headers`
+- Run server (`python3 manage.py runserver`)
 
 ### Client
 
@@ -14,7 +15,7 @@
 - `npm i`
 - `npm serve`
 
-save the final production files in `/docs` for github pages
+Save the final production files in `/docs` for github pages
 
 ### Database
 
