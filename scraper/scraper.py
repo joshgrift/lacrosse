@@ -5,6 +5,7 @@ import sys
 from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
 import mysql.connector
+import math
 
 
 courseCodes = ["AB", "AF", "AN", "AR", "AS", "BF", "BI", "BU", "CC", "CH", "CL", "CP", "CS", "DD", "DH", "EC", "EM", "EN", "ES", "EU", "FR", "FS", "GC", "GG", "GL", "GM", "GS", "GR", "HD", "HE", "HI", "HN",
@@ -13,6 +14,7 @@ courseCodes = ["AB", "AF", "AN", "AR", "AS", "BF", "BI", "BU", "CC", "CH", "CL",
 courses = []
 #getting time
 ts = calendar.timegm(time.gmtime())
+
 #connecting to database
 mydb = mysql.connector.connect(
   host="db-mysql-tor1-86354-do-user-3862566-0.b.db.ondigitalocean.com",
@@ -27,7 +29,7 @@ cursor = mydb.cursor(buffered=True)
 
 #temp input until I know what system arguments to look for
 term = input("enter term: ")
-id = 1
+
 
 if term=="202005":
     term_name = "Spring 2020"
@@ -38,8 +40,8 @@ elif term=="202101":
 else:
     term_name = "Spring 2021"
 
-sql = "INSERT INTO semester (id, name) VALUE (%s, %s)"
-val = (id, term_name)
+sql = "INSERT INTO semester (name) VALUE (%s)"
+val = (term_name,)
 cursor.execute(sql, val)    
 mydb.commit()
 
@@ -65,33 +67,61 @@ for i in range(len(courseCodes)):
                 continue
 
 for course in courses:
+    ts = calendar.timegm(time.gmtime())
+    t = (math.floor((ts*1000)/60000)) % 1000
+    e = t % 3+t % 29+t % 42
+    
     #                             https://scheduleme.wlu.ca/vsb/getclassdata.jsp?term=202009&course_1_0=BU-127&rq_1_0=null&t=802&e=24&nouser=1&_=1618248019531
-    depthResponse = requests.get("https://scheduleme.wlu.ca/vsb/getclassdata.jsp?term=202009&course_1_0=CP-102&rq_1_0=null&t=92&e=15&nouser=1&_=" + str(ts))
+    depthResponse = requests.get("https://scheduleme.wlu.ca/vsb/getclassdata.jsp?term="+str(term)+"&course_1_0=" + str(course) + "&rq_1_0=null&t="+str(t)+"&e="+str(e)+"&nouser=1&_=" + str(ts))
     soup = BeautifulSoup(depthResponse.content, 'html.parser')
 
-    
-    title = soup.course.attrs['title']
-    description = soup.course.attrs['desc']
-    faculty = soup.course.attrs['faculty']
-    prof = soup.block.attrs['teacher']
-    credits = soup.block.attrs['credits']
-    section = soup.block.attrs['disp']
-    online = True #everything online
-    in_person = False
-    capacity = 150
+    #print(depthResponse.content)
+    try: 
+        title = soup.course.attrs['title']
+        description = soup.course.attrs['desc']
+        faculty = soup.course.attrs['faculty']
+        prof = soup.block.attrs['teacher']
+        credits = soup.block.attrs['credits']
+        section = soup.block.attrs['disp']
+        online = True #everything online
+        in_person = False
+        capacity = 150
 
-    sql = "INSERT INTO professor (id, name) VALUE (%s, %s)"
-    val = (id, prof)
+        queryprof = "SELECT * FROM professor WHERE name=(%s)"  
+        val = (prof,)
+        cursor.execute(queryprof, val)
+        results = cursor.fetchall()
+        
+        if(len(results) == 0):
+            sql = "INSERT INTO professor (name) VALUE (%s)"
+            val = (prof,)
+            #print(queryprof)
+            cursor.execute(sql, val)
+            prof_id = cursor.lastrowid
+        else:
+            prof_id = results[0][0]
 
-    cursor.execute(sql, val)
+        querydept = "SELECT * FROM department WHERE code=(%s)"
+        val = (faculty,)
+        cursor.execute(querydept, val)
+        results = cursor.fetchall()
 
-    sql = "INSERT INTO course (id, title, department, professor, description, time_start, time_end, semester, online, in_person, room, credits, capactity, space_left)" \
-        "VALUE (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-    val = (id, title, faculty, prof, description, None, None, term, online, in_person, None, credits, capacity, None)
-    cursor.execute(sql, val)
+        if(len(results) == 0):
+            sql = "INSERT INTO department (code, name) VALUE (%s, %s)"
+            val = (faculty, "temp")
+            cursor.execute(sql, val)
+            department_id = cursor.lastrowid
+        else:
+            department_id = results[0][0]
 
-    mydb.commit()
-    id += 1
+        sql = "INSERT INTO course (title, department, professor, description, semester, online, in_person, room, credits, capacity, space_left, code)" \
+            "VALUE (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        val = (title, department_id, prof_id, description, term, online, in_person, 0, credits, capacity, 0, course)
+        cursor.execute(sql, val)
+        mydb.commit()
+        print(course + " added")
+    except Exception as e:
+        print(e)
 
 """ +--------------+--------------+------+-----+---------+----------------+
 | Field        | Type         | Null | Key | Default | Extra          |
