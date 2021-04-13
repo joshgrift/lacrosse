@@ -2,7 +2,7 @@ import { Campus, Course, Department, Professor, Room, Semester } from "@/types";
 import { createStore } from "vuex";
 import { State } from "@vue/runtime-core";
 
-const URL = "http://localhost:8000";
+const URL = "http://159.203.46.90:8000";
 
 export default createStore({
   state: {
