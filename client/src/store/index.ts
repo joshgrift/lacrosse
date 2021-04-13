@@ -112,6 +112,16 @@ export default createStore({
       const result = (await response.json()) as courseQueryResult;
 
       result.forEach((c) => {
+        const prof = context.state.professors.filter((i) => {
+          return i.id == c.professor;
+        });
+
+        console.log(prof);
+
+        if (prof.length == 0) {
+          console.log(c.professor);
+        }
+
         const course: Course = {
           code: c.code,
           id: c.id,
@@ -129,7 +139,7 @@ export default createStore({
             name: "unkown",
             campus: { id: 1, name: "Waterloo" },
           }, //context.state.rooms[c.room],
-          professor: context.state.professors[c.professor],
+          professor: prof[0],
           semester: { id: 202101, name: "Winter 2021" }, //, context.state.semesters[c.semester],
         };
 

@@ -7,7 +7,7 @@
       <div class="text-right text-sm text-gray-500">
         <span
           class="block float-right w-6 h-6 mx-1 bg-green-100 rounded-full p-1"
-          v-if="course.in_person"
+          v-if="course.online"
           ><svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -23,7 +23,7 @@
         ></span>
         <span
           class="block float-right w-6 h-6 mx-1 bg-green-100 rounded-full p-1"
-          v-if="course.online"
+          v-if="course.in_person"
           ><svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -39,19 +39,16 @@
         ></span>
       </div>
       <div class="text-sm text-gray-500">
-        8:00am - 8:30am | MWF | {{ course.room.name }}
-      </div>
-      <div class="text-sm text-gray-500 text-right">
         {{ course.professor.name }}
+        <!--8:00am - 8:30am | MWF | {{ course.room.name }}-->
       </div>
+      <div class="text-sm text-gray-500 text-right"></div>
     </div>
 
-    <p class="mt-1 text-sm text-gray-700">
-      {{ course.description }}
-    </p>
+    <p class="mt-1 text-sm text-gray-700" v-html="course.description"></p>
 
     <p class="text-right text-xs mt-1 text-gray-400">
-      {{ course.capacity }} seats | {{ course.credits }} credits
+      {{ course.capacity }} seats | {{ course.credits / 2 }} credits
     </p>
   </div>
 </template>

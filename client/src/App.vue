@@ -64,12 +64,12 @@
                 v-bind:key="department.id"
                 v-bind:value="department.id"
               >
-                {{ department.code }} - {{ department.name }}
+                {{ department.code }}
               </option>
             </select>
           </div>
 
-          <div class="mt-4">
+          <!--<div class="mt-4">
             <label class="block text-sm" for="room">Room</label>
             <select
               class="box-border w-full mt-1 block rounded-sm p-2 text-black"
@@ -85,7 +85,7 @@
                 {{ room.name }} - {{ room.campus.name }}
               </option>
             </select>
-          </div>
+          </div>-->
 
           <div class="mt-4">
             <label class="block text-sm" for="online">Online</label>
@@ -121,8 +121,8 @@
               name="credits"
             >
               <option value="null" selected>Any</option>
-              <option value="0.5">0.5</option>
-              <option value="1">1</option>
+              <option value="1">0.5</option>
+              <option value="2">1</option>
             </select>
           </div>
         </form>
