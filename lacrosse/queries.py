@@ -69,7 +69,7 @@ def searchParams(request):
     # --------- PROFESSOR ---------
     cursor1 = mydb.cursor()
 
-    professorQuery = "SELECT * FROM professor"
+    professorQuery = "SELECT * FROM professor ORDER BY name"
     cursor1.execute(professorQuery)
 
     result1 = cursor1.fetchall()
