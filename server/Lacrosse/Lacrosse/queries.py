@@ -1,157 +1,152 @@
 from django.http import JsonResponse
-#import mysql.connector
+import mysql.connector
 
 
 def query(request):
     print(request.GET["limit"])
-    #mydb = mysql.connector.connect(
-    #    host = "db-mysql-tor1-86354-do-user-3862566-0.b.db.ondigitalocean.com:25060",
-    #    user = "cp465",
-    #    password = "fskjd3njkfds8jk3ASDFuq38",
-    #    database = "cp465"
-    #)
-    #cursor = mydb.cursor()
-    userQuery = "SELECT * FROM course WHERE"
-    if "limit" in request.GET:
-        userQuery += " limit = " + request.GET.get("limit", False)
+    mydb = mysql.connector.connect(
+        host="db-mysql-tor1-86354-do-user-3862566-0.b.db.ondigitalocean.com",
+        user="cp465",
+        password="fskjd3njkfds8jk3ASDFuq38",
+        database="cp465",
+        port="25060"
+    )
+    cursor = mydb.cursor()
+    userQuery = "SELECT code, id, title, description, online, in_person, credits, capacity, professor, semester, room FROM course WHERE 1 = 1 "
     if "professor" in request.GET:
         userQuery += " AND professor = " + request.GET.get("professor", False)
     if "semester" in request.GET:
         userQuery += " AND semester = " + request.GET.get("semester", False)
     if "department" in request.GET:
-        userQuery += " AND department = " + request.GET.get("department", False)
+        userQuery += " AND department = " + \
+            request.GET.get("department", False)
     if "room" in request.GET:
-        userQuery += " AND room = " + request.GET("room", False)
+        userQuery += " AND room = " + request.GET.get("room", False)
     if "course" in request.GET:
-        userQuery += " AND course = " + request.GET("course", False)
+        userQuery += " AND code LIKE '%" + \
+            request.GET.get("course", False) + "%'"
     if "online" in request.GET:
-        userQuery += " AND online = " + request.GET("online", False)
-    if "in_person" in request:
-        userQuery += " AND in_person = " + request.GET("in_person", False)
-    if "credits" in request:
-        userQuery += " AND credits = " + request.GET("credits", False)
-    print(userQuery)
-    #cursor.execute(userQuery)
-    #result = cursor.fetchall()
+        userQuery += " AND online = " + request.GET.get("online", False)
+    if "in_person" in request.GET:
+        userQuery += " AND in_person = " + request.GET.get("in_person", False)
+    if "credits" in request.GET:
+        userQuery += " AND credits = " + request.GET.get("credits", False)
 
-    courses = {
+    userQuery += " LIMIT " + request.GET.get("limit", False)
+    cursor.execute(userQuery)
+    result = cursor.fetchall()
 
-    }
+    courses = []
+    for obj in result:
+        courses.append({
+            "code": obj[0],
+            "id": obj[1],
+            "title": obj[2],
+            "description": obj[3],
+            "online": obj[4],
+            "in_person": obj[5],
+            "credits": obj[6],
+            "capacity": obj[7],
+            "professor": obj[8],
+            "semester": obj[9],
+            "room": obj[10],
+            "time_start": 0,
+            "time_end": 0
+        })
 
-    #courses = {
-    #    "courses": [
-    #        {
-    #            "code": "CP102",
-    #            "id": 0,
-    #            "title": "Intro to Compsci",
-    #            "description": "Welcome to compsci",
-    #            "time_start": 17093949,
-    #            "time_end": 182748394,
-    #            "online": True,
-    #            "in_person": False,
-    #            "credits": 0.5,
-    #            "capacity": 150,
-    #            "space_left": 0,
-    #            "professor": 0,
-    #            "room": 0,
-    #            "semester": 0,
-    #        }
-    #    ]
-    #}
-    return JsonResponse(courses)
+    return JsonResponse(courses, safe=False)
 
 
 def searchParams(request):
-    # rooms semesters + campus are not used
-    # need query for professors and department
-    #mydb = mysql.connector.connect(
-    #    host="db-mysql-tor1-86354-do-user-3862566-0.b.db.ondigitalocean.com:25060",
-    #    user="cp465",
-    #    password="fskjd3njkfds8jk3ASDFuq38",
-    #    database="cp465"
-    #)
+    mydb = mysql.connector.connect(
+        host="db-mysql-tor1-86354-do-user-3862566-0.b.db.ondigitalocean.com",
+        user="cp465",
+        password="fskjd3njkfds8jk3ASDFuq38",
+        database="cp465",
+        port=25060
+    )
 
     # --------- PROFESSOR ---------
-    # cursor1 = mydb.cursor()
+    cursor1 = mydb.cursor()
 
     professorQuery = "SELECT * FROM professor"
-    # cursor1.execute(professorQuery)
+    cursor1.execute(professorQuery)
 
-    # result1 = cursor1.fetchall()
+    result1 = cursor1.fetchall()
+
+    prof_list = []
+    for obj in result1:
+        prof_list.append({
+            "id": obj[0],
+            "name": obj[1],
+        })
 
     # --------- DEPARTMENT ---------
-    # cursor2 = mydb.cursor()
+    cursor2 = mydb.cursor()
 
     departmentQuery = "SELECT * FROM department"
-    # cursor2.execute(departmentQuery)
+    cursor2.execute(departmentQuery)
 
-    # result2 = cursor2.fetchall()
+    result2 = cursor2.fetchall()
+
+    department_list = []
+    for obj in result2:
+        department_list.append({
+            "id": obj[0],
+            "name": obj[1],
+            "code": obj[2]
+        })
 
     # --------- SEMESTER ---------
-    # cursor3 = mydb.cursor()
+    cursor3 = mydb.cursor()
 
-    # semesterQuery = "SELECT * FROM semester"
-    # cursor3.execute(semesterQuery)
+    semesterQuery = "SELECT * FROM semester"
+    cursor3.execute(semesterQuery)
 
-    # result3 = cursor3.fetchall()
+    result3 = cursor3.fetchall()
+
+    semester_list = []
+    for obj in result3:
+        semester_list.append({
+            "id": obj[0],
+            "name": obj[1]
+        })
 
     # --------- ROOMS ---------
-    # cursor4 = mydb.cursor()
+    cursor4 = mydb.cursor()
 
-    # semesterQuery = "SELECT * FROM semester"
-    # cursor4.execute(semesterQuery)
+    semesterQuery = "SELECT * FROM room"
+    cursor4.execute(semesterQuery)
 
-    # result4 = cursor4.fetchall()
+    result4 = cursor4.fetchall()
 
+    room_list = []
+    for obj in result4:
+        room_list.append({
+            "id": obj[0],
+            "campus": obj[1],
+            "name": obj[2],
+        })
     # --------- CAMPUS ---------
-    # cursor5 = mydb.cursor()
+    cursor5 = mydb.cursor()
 
-    # semesterQuery = "SELECT * FROM semester"
+    campusQuery = "SELECT * FROM campus"
 
-    # cursor5.execute(semesterQuery)
-    # result5 = cursor5.fetchall()
+    cursor5.execute(campusQuery)
+    result5 = cursor5.fetchall()
+
+    campus_list = []
+    for obj in cursor5:
+        campus_list.append({
+            "id": obj[0],
+            "name": obj[1]
+        })
 
     params = {
-        "professors": [
-            {
-                "id": 0,
-                "name": "Prof. Martin",
-            },
-            {
-                "id": 1,
-                "name": "David Brown",
-            },
-        ],
-        "semesters": [
-            {
-                "id": 1,
-                "name": "Fall 2020",
-            },
-        ],
-        "rooms": [
-            {
-                "id": 0,
-                "name": "N10001",
-                "campus": 0,
-            },
-            {
-                "id": 1,
-                "name": "N10002",
-                "campus": 0,
-            },
-        ],
-        "campus": [
-            {
-                "id": 0,
-                "name": "Waterloo",
-            },
-        ],
-        "departments": [
-            {
-                "id": 0,
-                "name": "Computer Science",
-                "code": "CP",
-            },
-        ]
+        "professors": prof_list,
+        "semesters": semester_list,
+        "rooms": room_list,
+        "campus": campus_list,
+        "departments": department_list
     }
     return JsonResponse(params)
