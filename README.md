@@ -14,6 +14,8 @@
 - `npm i`
 - `npm serve`
 
+save the final production files in `/docs` for github pages
+
 ### Database
 
 We've included a dump of our database in this folder so you can examine the schema

@@ -84,7 +84,8 @@ export default createStore({
 
       result.rooms.forEach((p) => {
         const key = p.campus;
-        p.campus = context.state.campus[key];
+        p.campus = 1;
+        //context.state.campus[key];
         context.commit("addRoom", p);
       });
     },
@@ -108,7 +109,7 @@ export default createStore({
       }[];
 
       const response = await fetch(URL + "/query" + query);
-      const result = (await response.json()).courses as courseQueryResult;
+      const result = (await response.json()) as courseQueryResult;
 
       result.forEach((c) => {
         const course: Course = {
@@ -123,9 +124,13 @@ export default createStore({
           credits: c.credits,
           capacity: c.capacity,
           space_left: c.space_left,
-          room: context.state.rooms[c.room],
+          room: {
+            id: 0,
+            name: "unkown",
+            campus: { id: 1, name: "Waterloo" },
+          }, //context.state.rooms[c.room],
           professor: context.state.professors[c.professor],
-          semester: context.state.semesters[c.semester],
+          semester: { id: 202101, name: "Winter 2021" }, //, context.state.semesters[c.semester],
         };
 
         context.commit("addCourse", course);

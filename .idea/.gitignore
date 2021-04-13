@@ -2,7 +2,7 @@
 /shelf/
 /workspace.xml
 # Datasource local storage ignored files
-/../../../../../../:\Users\Stevie G\PycharmProjects\djangoLACROSSE\.idea/dataSources/
+/../../../../../../../:\Users\Stevie G\Documents\GitHub\lacrosse\.idea/dataSources/
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/
